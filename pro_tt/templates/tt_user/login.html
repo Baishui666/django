@@ -1,0 +1,95 @@
+{% extends 'base_foot.html' %}
+{% block head%}
+<script>
+	$(function () {
+	    var erorr_name = 0;
+	    var erorr_pwd = 0;
+//		alert({{erorr_name}} == 1);
+		if ({{erorr_name}} == 1){
+//		    alert('nameerorr')
+		        $('.user_error').show().html('用户名错误').css('color', 'red');
+		}
+
+		if ({{erorr_pwd}} == 1){
+			$('.pwd_error').show().html('密码错误').css('color', 'red');
+		}
+
+		$('.name_input').blur(function () {
+
+			if ($(this).val() == ''){
+			    $(this).next().show().html('用户名不能为空').css('color', 'red');
+				erorr_name = 1;
+			}
+
+			else {
+			    erorr_name = 0;
+				$(this).next().hide()
+			}
+        });
+
+		$('.pass_input').blur(function () {
+			if ($(this).val() == ''){
+			    $(this).next().show().html('密码不能为空').css('color', 'red');
+				erorr_pwd = 1
+			}
+			else {
+			     erorr_pwd = 0;
+				$(this).next().hide()
+			}
+        });
+
+	    $('.form_input').submit(function () {
+			if (erorr_name == 0 && erorr_pwd == 0){
+			    return true
+			}
+			else {
+			    return false
+			}
+        });
+
+
+
+
+    });
+
+
+
+</script>
+
+
+{% endblock head%}
+
+{% block body%}
+	<div class="login_top clearfix">
+		<a href="index.html" class="login_logo"><img src="/static/images/logo02.png"></a>
+	</div>
+
+	<div class="login_form_bg">
+		<div class="login_form_wrap clearfix">
+			<div class="login_banner fl"></div>
+			<div class="slogan fl">日夜兼程 · 急速送达</div>
+			<div class="login_form fr">
+				<div class="login_title clearfix">
+					<h1>用户登录</h1>
+					<a href="/user/register/">立即注册</a>
+				</div>
+				<div class="form_input">
+					<form action="/user/login_handel/" method="post">
+						{% csrf_token %}
+						<input type="text" name="username" class="name_input" placeholder="请输入用户名" value="{{uname}}">
+						<div class="user_error">输入错误</div>
+						<input type="password" name="pwd" class="pass_input" placeholder="请输入密码" value="{{pwd}}">
+						<div class="pwd_error">输入错误</div>
+						<div class="more_input clearfix">
+							<input type="checkbox" name="pwd_record" value="1" checked>
+							<label>记住用户名</label>
+							<a href="#">忘记密码</a>
+						</div>
+						<input type="submit" name="" value="登录" class="input_submit">
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock body%}

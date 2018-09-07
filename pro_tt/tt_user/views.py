@@ -95,13 +95,17 @@ def info(request):
     user_id = request.session.get('user_id', default='')
     uname = request.session.get('user_name', default='')
     user = UserInfo.objects.filter(id=user_id)
-    context = {'title': '用户中心', 'uname': uname, 'email': user[0].uemail}
+    context = {'title': '用户中心',
+               'page_name': 1,
+               'uname': uname,
+               'email': user[0].uemail}
 
     return render(request, 'tt_user/user_center_info.html', context)
 
 
 def order(request):
-    return render(request, 'tt_user/user_center_order.html')
+    context = {'page_name': 1}
+    return render(request, 'tt_user/user_center_order.html', context)
 
 
 def site(request):
@@ -116,7 +120,7 @@ def site(request):
         user.uphone = request.POST['phone']
         user.save()
 
-    context = {'title': '用户中心', 'user': user}
+    context = {'title': '用户中心', 'page_name': 1, 'user': user}
     return render(request, 'tt_user/user_center_site.html', context)
 
 

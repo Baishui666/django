@@ -1,3 +1,4 @@
+#coding=utf-8
 """
 Django settings for pro_tt project.
 
@@ -37,7 +38,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'tt_user'
+    'tt_user',
+    'tt_goods',
+    'tinymce',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -90,9 +93,9 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -108,3 +111,15 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
+# 开发阶段
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static')
+
+# 实施部署
+# MEDIA_ROOT = '/var/www/pro_tt/static'
+
+# 富文本编辑器
+TINYMCE_DEFAULT_CONFIG = {
+    'theme': 'advanced',
+    'width': 600,
+    'height': 400,
+}

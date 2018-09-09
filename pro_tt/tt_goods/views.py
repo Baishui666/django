@@ -39,7 +39,7 @@ def index(request):
 
     return render(request, 'tt_goods/index.html', context)
 
-@user_decorator.login_check
+
 def list(request, tid, pindex, sort):   # type_id, 第几页， 排序类型
     # 获取商品类型
     g_type = TypeInfo.objects.get(pk=int(tid))
@@ -71,7 +71,6 @@ def list(request, tid, pindex, sort):   # type_id, 第几页， 排序类型
     return render(request, 'tt_goods/list.html', context)
 
 
-@user_decorator.login_check
 def detail(request, gid):       # 提供good_id参数
 
     goods = GoodsInfo.objects.get(pk=int(gid))

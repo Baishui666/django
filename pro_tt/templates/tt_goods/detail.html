@@ -1,55 +1,7 @@
 {% extends 'base.html' %}
 
 {% block head %}
-{#	<script type="text/javascript" src="js/jquery-1.12.2.js"></script>#}
-{#	<script type="text/javascript">#}
-{#		var $add_x = $('#add_cart').offset().top;#}
-{#		var $add_y = $('#add_cart').offset().left;#}
-{##}
-{#		var $to_x = $('#show_count').offset().top;#}
-{#		var $to_y = $('#show_count').offset().left;#}
-{##}
-{#		$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})#}
-{#		$('#add_cart').click(function(){#}
-{#			$(".add_jump").stop().animate({#}
-{#				'left': $to_y+7,#}
-{#				'top': $to_x+7},#}
-{#				"fast", function() {#}
-{#					$(".add_jump").fadeOut('fast',function(){#}
-{#						$('#show_count').html(2);#}
-{#					});#}
-{##}
-{#			});#}
-{#		})#}
-{#	</script>#}
-    <script>
-        function add() {
-            num = parseFloat($('.num_show').val());
-            $('.num_show').val(num + 1);
-            $('.num_show').blur();
 
-        }
-
-        function minus() {
-            num =  parseFloat($('.num_show').val());
-            if (num > 1){
-
-               $('.num_show').val(num - 1 );
-            }
-            {# 此处blur不知什么作用#}
-            $('.num_show').blur();
-        }
-        $(function () {
-            $('.num_show').blur(function () {
-                num = parseFloat($('.num_show').val());
-                price = parseFloat($('#price').text());
-                total = num * price;
-{#                alert(total);#}
-                $('#gtotal').text(total.toFixed(2)+'元');
-            })
-        })
-
-    </script>
 {% endblock head %}
 
 {% block main_con %}
@@ -144,8 +96,75 @@
 		</div>
 	</div>
 
+    <div class="add_jump"></div>
+    <script>
+
+        var $add_x = $('#add_cart').offset().top;
+		var $add_y = $('#add_cart').offset().left;
+
+		var $to_x = $('#show_count').offset().top;
+		var $to_y = $('#show_count').offset().left;
+
+		$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'});
+		$('#add_cart').click(function(){
+		    if ($('.login_btn').text().indexOf('登录') >= 0){
+		        alert('请先登录');
+		        location.href='/user/login/';
+		        return;
+            }
+
+		    // 动画
+			$(".add_jump").stop().animate({
+				'left': $to_y+7,
+				'top': $to_x+7},
+				"fast", function() {
+					$(".add_jump").fadeOut('fast',function(){
+						//$('#show_count').html(count);
+					});
+
+			});
+
+			// 请求购物车数量
+            count = parseInt($('.num_show').val());
+            $.get('/cart/add{{ goods.id }}_'+count+'/',function (dic) {
+                if ( dic.count == 0) {
+                    alert('该商品已经添加');
+                }
+                $('#show_count').text(dic.count)
+            });
 
 
+		});
+
+
+        function add() {
+            num = parseFloat($('.num_show').val());
+            $('.num_show').val(num + 1);
+            $('.num_show').blur();
+        }
+
+        function minus() {
+            num =  parseFloat($('.num_show').val());
+            if (num > 1){
+
+               $('.num_show').val(num - 1 );
+            }
+            {# 此处blur不知什么作用#}
+            $('.num_show').blur();
+        }
+
+        $(function () {
+            $('.num_show').blur(function () {
+                num = parseFloat($('.num_show').val());
+                price = parseFloat($('#price').text());
+                total = num * price;
+
+                $('#gtotal').text(total.toFixed(2)+'元');
+            })
+        })
+
+
+    </script>
 
 	
 {% endblock main_con %}

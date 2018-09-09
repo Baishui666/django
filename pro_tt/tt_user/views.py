@@ -5,8 +5,8 @@ from django.http import HttpResponse,JsonResponse,HttpResponseRedirect
 from hashlib import sha1
 from models import *
 import user_decorator
-import user
-
+from tt_goods.models import *
+from tt_cart.models import *
 
 def register(request):
     context = {'title': '注册'}
@@ -78,7 +78,7 @@ def login_handel(request):
 
             # 判断是否从其他等转向过来的登录，通过取session['url']，如果非空，验证通过后返回原来url页面
             url = request.COOKIES.get('url', '/')
-            print '11111', url
+
             response = HttpResponseRedirect(url)
 
             if pwd_record == '1':
@@ -90,6 +90,8 @@ def login_handel(request):
             request.session['user_id'] = user[0].id
             request.session['user_name'] = uname
 
+            count = CartInfo.objects.filter(user_id=user[0].id).count()
+            response.set_cookie('count', count)
             return response
 
         else:
@@ -101,8 +103,10 @@ def login_handel(request):
 
 
 def logout(request):
+    res = HttpResponseRedirect('/')
+    res.delete_cookie('count')
     request.session.flush()
-    return redirect('/')
+    return res
 
 
 @user_decorator.login_check
@@ -131,7 +135,7 @@ def info(request):
 
 @user_decorator.login_check
 def order(request):
-    context = {'page_name': 1}
+    context = {'title': '用户中心', 'page_name': 1}
     return render(request, 'tt_user/user_center_order.html', context)
 
 
@@ -150,7 +154,6 @@ def site(request):
 
     context = {'title': '用户中心', 'page_name': 1, 'user': user}
     return render(request, 'tt_user/user_center_site.html', context)
-
 
 
 

@@ -9,8 +9,9 @@ urlpatterns = [
     url(r'^login_handel/$', views.login_handel),
     url(r'^logout/$', views.logout),
     url(r'^info/$', views.info),
-    url(r'^order/$', views.order),
+    url(r'^order/(\d*)$', views.order),
     url(r'^site/$', views.site),
+
 
 ]
 

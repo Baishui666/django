@@ -17,32 +17,34 @@
 				<div class="site_con">
 					<dl>
 						<dt>当前地址：</dt>
-						<dd>{{user.uaddress}}
-                            {% if user.uname != ''  %}
-                                {{user.uname}}&nbsp;(收)
+						<dd>
+                            {{user.uaddress}}
+                            {% if user.ureceiver != ''  %}
+                                {{user.ureceiver}}&nbsp;(收)
                             {% endif %}
-                            {{user.uphone}}</dd>
+                            {{user.uphone}}
+                        </dd>
 					</dl>					
 				</div>
 				<h3 class="common_title2">编辑地址</h3>
 				<div class="site_con">
-					<form action="/user/site_handle/" method="post">
+					<form action="/user/site/" method="post">
 						{% csrf_token %}
 						<div class="form_group">
 							<label>收件人：</label>
-							<input type="text" name="receiver" value="{{user.ureceive}}">
+							<input type="text" name="receiver" value="">
 						</div>
 						<div class="form_group form_group2">
 							<label>详细地址：</label>
-							<textarea class="site_area" name="address" >{{user.uaddress}}</textarea>
+							<textarea class="site_area" name="address" ></textarea>
 						</div>
 						<div class="form_group">
 							<label>邮编：</label>
-							<input type="text" name="postcode" value="{{user.postcode}}">
+							<input type="text" name="postcode" value="">
 						</div>
 						<div class="form_group">
 							<label>手机：</label>
-							<input type="text" name="phone" value="{{user.uphone}}">
+							<input type="text" name="phone" value="">
 						</div>
 
 						<input type="submit" name="" value="提交" class="info_submit">

@@ -10,10 +10,16 @@ from tt_goods import user_decorator
 def cart(request):
     uid = request.session['user_id']
     carts = CartInfo.objects.filter(user_id=uid)
+    if carts.count() == 0:
+        state = 0
+    else:
+        state = 1
+
     context = {
         'title': '购物车',
         'page_name': 1,
-        'carts': carts
+        'carts': carts,
+        'state': state,
     }
     return render(request, 'tt_cart/cart.html', context)
 
@@ -31,31 +37,33 @@ def add(request, gid, count):
     carts = CartInfo.objects.filter(user_id=uid, goods_id=gid)
     # 判断添加的商品是否在cart上，是的话在count+1,否则新生成一行数据并更新cookie中count加1
     if len(carts) >= 1:
-
+        print '商品已添加'
         carts[0].count = carts[0].count + int(count)
         carts[0].save()
         state = 0
-        print '商品已添加'
     else:
+        print '商品未添加'
         cart = CartInfo()
         cart.user_id = uid
         cart.goods_id = gid
-        cart.count = count
+        cart.count = int(count)
         cart.save()
         state = 1
-        print '商品未添加'
+
         res.set_cookie('count', int(cookie_count) + 1)
         print 'set_cookie成功', int(cookie_count) + 1
 
     # 如果是ajax请求则返回json格式
     if request.is_ajax():
-        count = CartInfo.objects.filter(user_id=uid).count()
         if state == 1:
-            res.set_cookie('count', int(cookie_count) + 1)
-            res = JsonResponse({'count': count})
+            count = CartInfo.objects.filter(user_id=uid).count()
+            jres = JsonResponse({'count': count})
+            jres.set_cookie('count', int(count))
+            print 'ajax:count', count
         else:
-            res = JsonResponse({'count': 0})
-        return res
+            jres = JsonResponse({'count': 0})
+            print 'count: 0'
+        return jres
 
     return res
 
@@ -72,21 +80,6 @@ def edit(request, cid, count):
         state =1
 
     return JsonResponse({'state': state})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def delete(request, cid):

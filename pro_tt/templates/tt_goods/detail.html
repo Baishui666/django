@@ -126,11 +126,14 @@
 
 			// 请求购物车数量
             count = parseInt($('.num_show').val());
-            $.get('/cart/add{{ goods.id }}_'+count+'/',function (dic) {
-                if ( dic.count == 0) {
+
+            $.get('/cart/add{{ goods.id }}_' + count + '/',function (dic) {
+                if ( dic.count != 0) {
+                    $('#show_count').text(dic.count);
+                }
+                else {
                     alert('该商品已经添加');
                 }
-                $('#show_count').text(dic.count)
             });
 
 

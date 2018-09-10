@@ -12,12 +12,12 @@
                 price = $(this).prev().prev().text();
                 count = $(this).prev().find('input').val();
                 total0 = parseFloat(price) * parseFloat(count);
-                $(this).text(total0.toFixed(2));
+                $(this).text(total0.toFixed(2));        // 小计
                 total_p += total0;
                 total_count++;
             });
-            $('#all_price').text(total_p.toFixed(2));
-            $('.total_count1').text(total_count)
+            $('#all_price').text(total_p.toFixed(2));       //总计
+            $('.total_count1').text(total_count)            //数量
         }
 
         // 删除商品
@@ -34,6 +34,17 @@
            }
         }
 
+        // 去结算
+        function to_brance(){
+            goods = $(':checked:not(#select_all)');
+            var cart_id = '';
+            $.each(goods, function () {
+                var id = $(this).parents('.cart_list_td').attr('id');
+                cart_id = cart_id + 'cart_id=' + id + '&&'
+            });
+            location.href=('/order/?'+cart_id)
+        }
+
         $(function () {
             total();
             //全选、全取消
@@ -43,7 +54,7 @@
                //$(':checkbox').not($(this)).prop('checked', state);     //第二种写法
            });
 
-           // 选择
+           // 点击选择
             $(':checkbox:not(#select_all)').click(function () {
                 if ($(this).prop('checked')){
                     if ($(':checked').length+1 == $(':checkbox').length){
@@ -65,11 +76,8 @@
                 txt = $(this).prev();
 
                 if (txt.val() > 1){
-                   txt.val(parseFloat(txt.val())-1).blur();
+                   txt.val(parseFloat(txt.val())-1).blur();     // 此处blur,模拟失去焦点，调用blur事件
                 }
-
-                // 此处blur,模拟失去焦点，调用blur事件
-
             });
 
             $('.num_show').blur(function () {
@@ -83,7 +91,7 @@
                     $(this).focus();
                     return;
                 }
-                cart_id = $(this).parents('.cart_list_td').attr('id');
+                var cart_id = $(this).parents('.cart_list_td').attr('id');
                 $.get('/cart/edit/' + cart_id + '_' + count, function (dic) {
                     if (dic.state == 1){
                        total();
@@ -92,14 +100,7 @@
                         $(this).val(count)
                     }
                 });
-
-
             });
-
-
-
-
-
 
         });
 
@@ -120,13 +121,16 @@
 		<li class="col05">小计</li>
 		<li class="col06">操作</li>
 	</ul>
+    {% if state == 0 %}
+        <ul class="cart_list_th clearfix" style="color: red;font-size: 30px">亲， 您还没添加商品到购物， 尽情购物吧</ul>
+    {% else %}
     {% for cart in carts %}
         <ul class="cart_list_td clearfix" id="{{ cart.id }}">
             <li class="col01"><input type="checkbox" name="" checked ></li>
             <li class="col02"><img src="/static/{{ cart.goods.g_pic }}"></li>
             <li class="col03">{{ cart.goods.g_title }}<br><em>{{ cart.goods.g_price }}元/500g</em></li>
             <li class="col04">500g</li>
-            <li class="col05">25.80元</li>
+            <li class="col05">{{ cart.goods.g_price }}元</li>
             <li class="col06">
                 <div class="num_add">
                     <a href="javascript:;" class="add fl">+</a>
@@ -134,16 +138,16 @@
                     <a href="javascript:;" class="minus fl">-</a>
                 </div>
             </li>
-            <li class="col07">25.80元</li>
+            <li class="col07">元</li>
             <li class="col08"><a href="javascript:cart_del({{ cart.id }});" >删除</a></li>
         </ul>
     {% endfor %}
-
+    {% endif %}
 	<ul class="settlements">
 		<li class="col01"><input type="checkbox" name="" checked="" id="select_all"></li>
 		<li class="col02">全选</li>
 		<li class="col03">合计(不含运费)：<span>¥</span><em id="all_price">42.60</em><br>共计<b class="total_count1">{{ carts.count }}</b>件商品</li>
-		<li class="col04"><a href="../tt_user/place_order.html">去结算</a></li>
+		<li class="col04"><a href="javascript:to_brance()" >去结算</a></li>
 	</ul>
 
 {% endblock main_con %}

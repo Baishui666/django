@@ -13,75 +13,72 @@
 			</ul>
 		</div>
 		<div class="right_content clearfix">
-				<h3 class="common_title2">全部订单</h3>
-				<ul class="order_list_th w978 clearfix">
-					<li class="col01">2016-8-21 17:36:24</li>
-					<li class="col02">订单号：56872934</li>
-					<li class="col02 stress">未支付</li>		
-				</ul>
+            <h3 class="common_title2">全部订单</h3>
+            {% if state == 1 %}
+                {% for order in page_orders %}
+                    <ul class="order_list_th w978 clearfix">
+                        <li class="col01">{{ order.o_date }}</li>
+                        <li class="col02">订单号：{{ order.oid }}</li>
+                        <li class="col02 stress">
+                            {% if order.o_isPay == True %}
+                                已支付
+                            {% else %}
+                                未支付
+                            {% endif %}
+                        </li>
+                    </ul>
 
-				<table class="order_list_table w980">
-					<tbody>
-						<tr>
-							<td width="55%">
-								<ul class="order_goods_list clearfix">					
-									<li class="col01"><img src="/static/images/goods02.jpg"></li>
-									<li class="col02">嘎啦苹果嘎啦苹果<em>11.80元/500g</em></li>	
-									<li class="col03">1</li>
-									<li class="col04">11.80元</li>	
-								</ul>
-								<ul class="order_goods_list clearfix">					
-									<li class="col01"><img src="/static/images/goods02.jpg"></li>
-									<li class="col02">嘎啦苹果嘎啦苹果<em>11.80元/500g</em></li>	
-									<li class="col03">1</li>
-									<li class="col04">11.80元</li>	
-								</ul>
-							</td>
-							<td width="15%">33.60元</td>
-							<td width="15%">待付款</td>
-							<td width="15%"><a href="#" class="oper_btn">去付款</a></td>
-						</tr>
-					</tbody>
-				</table>
-				
-				<ul class="order_list_th w978 clearfix">
-					<li class="col01">2016-8-21 17:36:24</li>
-					<li class="col02">订单号：56872934</li>
-					<li class="col02 stress">已支付</li>			
-				</ul>
-				<table class="order_list_table w980">
-					<tbody>
-						<tr>
-							<td width="55%">
-								<ul class="order_goods_list clearfix">					
-									<li class="col01"><img src="/static/images/goods02.jpg"></li>
-									<li class="col02">嘎啦苹果嘎啦苹果<em>11.80元/500g</em></li>	
-									<li class="col03">1</li>
-									<li class="col04">11.80元</li>	
-								</ul>
-								<ul class="order_goods_list clearfix">					
-									<li class="col01"><img src="/static/images/goods02.jpg"></li>
-									<li class="col02">嘎啦苹果嘎啦苹果<em>11.80元/500g</em></li>	
-									<li class="col03">1</li>
-									<li class="col04">11.80元</li>	
-								</ul>
-							</td>
-							<td width="15%">33.60元</td>
-							<td width="15%">已付款</td>
-							<td width="15%"><a href="#" class="oper_btn">查看物流</a></td>
-						</tr>
-					</tbody>
-				</table>
+                    <table class="order_list_table w980">
+                        <tbody>
+                            <tr>
+                                <td width="55%">
+                                    {% for detail in order.orderlist_set.all %}
+                                        <ul class="order_goods_list clearfix">
+                                        <li class="col01"><img src="/static/{{ detail.goods.g_pic }}"></li>
+                                        <li class="col02">{{ detail.goods.g_title }}<em>{{ detail.goods.g_price }}元/500g</em></li>
+                                        <li class="col03">{{ detail.count }}</li>
+                                        <li class="col04">{% widthratio detail.goods.g_price 1 detail.count %}元</li>
+                                    </ul>
+                                    {% endfor %}
 
-				<div class="pagenation">
-					<a href="#"><上一页</a>
-					<a href="#" class="active">1</a>
-					<a href="#">2</a>
-					<a href="#">3</a>
-					<a href="#">4</a>
-					<a href="#">5</a>
-					<a href="#">下一页></a>
-				</div>
+                                </td>
+                                <td width="15%">{{ order.o_total }}元</td>
+
+                                {% if order.o_isPay == True %}
+                                    <td width="15%">已付款</td>
+                                    <td width="15%"><a href="#" class="oper_btn">查物流</a></td>
+                                {% else %}
+                                    <td width="15%">待付款</td>
+                                    <td width="15%"><a href="#" class="oper_btn">去付款</a></td>
+                                {% endif %}
+
+                            </tr>
+                        </tbody>
+                    </table>
+                {% endfor %}
+
+                <div class="pagenation">
+                {% if page_orders.has_previous %}
+                    <a href="/user/order/{{ page_orders.previous_page_number }}" class="active">上一页</a>
+                {% endif %}
+
+                {% for page in page_range %}
+                    {% if page == page_orders.number %}
+                        <a href="#">{{ page }}</a>
+                    {% else %}
+                        <a href="/user/order/{{ page }}" class="active">{{ page }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_orders.has_next %}
+                    <a href="/user/order/{{ page_orders.next_page_number }}" class="active">下一页</a>
+                {% endif %}
+            </div>
+
+            {% else %}
+                <div> 客户还没下过订单哦，加油哦~~~</div>
+            {% endif %}
+
 		</div>
 	</div>
 

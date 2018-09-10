@@ -2,11 +2,14 @@
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse,JsonResponse,HttpResponseRedirect
+from django.core.paginator import Paginator
 from hashlib import sha1
 from models import *
 import user_decorator
 from tt_goods.models import *
 from tt_cart.models import *
+from tt_order.models import *
+
 
 def register(request):
     context = {'title': '注册'}
@@ -65,10 +68,10 @@ def login_handel(request):
     uname = request.POST['username']
     pwd = request.POST['pwd']
     pwd_record = request.POST.get('pwd_record', '0')
-
+    print uname
     # 判断用户合法性
     user = UserInfo.objects.filter(uname=uname)     # 返回[object1, object2]
-
+    print user
     if len(user) == 1:
         s1 = sha1()
         s1.update(pwd)
@@ -105,6 +108,8 @@ def login_handel(request):
 def logout(request):
     res = HttpResponseRedirect('/')
     res.delete_cookie('count')
+    res.delete_cookie('url')
+    res.delete_cookie('goods_record')
     request.session.flush()
     return res
 
@@ -134,8 +139,28 @@ def info(request):
 
 
 @user_decorator.login_check
-def order(request):
-    context = {'title': '用户中心', 'page_name': 1}
+def order(request, index):
+    uid = request.session['user_id']
+    orders = OrderInfo.objects.filter(o_user_id=uid)
+
+    if index == '':
+        index = 1
+
+    paginator = Paginator(orders, 2)        # 分页对象，参数为列表数据，每页2条数据
+    page_orders = paginator.page(int(index))       # 每页的内容，page为列表
+    page_range = paginator.page_range
+    if paginator.count == 0:
+        state = 0
+    else:
+        state = 1
+
+    context = {
+        'title': '我的订单', 'page_name': 1,
+        'page_orders': page_orders,
+        'page_range': page_range,
+        'state': state,
+    }
+
     return render(request, 'tt_user/user_center_order.html', context)
 
 
@@ -146,11 +171,14 @@ def site(request):
     user = UserInfo.objects.get(id=user_id)
     if request.method == 'POST':
 
-        user.ureceive = request.POST['recieve']
+        user.ureceiver = request.POST['receiver']
         user.uaddress = request.POST['address']
         user.postcode = request.POST['postcode']
         user.uphone = request.POST['phone']
         user.save()
+
+    if request.method == 'GET':
+        pass
 
     context = {'title': '用户中心', 'page_name': 1, 'user': user}
     return render(request, 'tt_user/user_center_site.html', context)
